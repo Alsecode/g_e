@@ -102,6 +102,7 @@
             this.Controls.Add(this.Cancel);
             this.Controls.Add(this.OkButton);
             this.Name = "CreateImage";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Create Image";
             this.ResumeLayout(false);
             this.PerformLayout();
