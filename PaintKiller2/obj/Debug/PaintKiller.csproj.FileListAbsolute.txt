@@ -1,0 +1,22 @@
+D:\Admin\Visual Projects\PaintKiller\bin\Debug\PaintKiller.exe.config
+D:\Admin\Visual Projects\PaintKiller\bin\Debug\PaintKiller.exe
+D:\Admin\Visual Projects\PaintKiller\bin\Debug\PaintKiller.pdb
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.csprojAssemblyReference.cache
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.Form1.resources
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.Properties.Resources.resources
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.csproj.GenerateResource.cache
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.csproj.CoreCompileInputs.cache
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.exe
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.pdb
+D:\Admin\Visual Projects\PaintKiller\obj\Debug\PaintKiller.CreateImage.resources
+D:\g_e-master\PaintKiller\bin\Debug\PaintKiller.exe.config
+D:\g_e-master\PaintKiller\bin\Debug\PaintKiller.exe
+D:\g_e-master\PaintKiller\bin\Debug\PaintKiller.pdb
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.csprojAssemblyReference.cache
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.CreateImage.resources
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.Form1.resources
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.Properties.Resources.resources
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.csproj.GenerateResource.cache
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.csproj.CoreCompileInputs.cache
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.exe
+D:\g_e-master\PaintKiller\obj\Debug\PaintKiller.pdb
