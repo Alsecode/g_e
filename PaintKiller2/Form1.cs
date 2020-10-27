@@ -27,6 +27,9 @@ namespace PaintKiller
         public Form1()
         {
             mode = "Линия"; //Линия - значение по умолчанию
+            timer.Interval = 1000;
+            timer.Elapsed += timer1_Tick;
+            timer.Enabled = true;
             InitializeComponent();
             color = Color.Black;
             ChooseColor.BackColor = color;
@@ -116,6 +119,7 @@ namespace PaintKiller
 
         private void ChooseColor_Click(object sender, EventArgs e)
         {
+            colorDialog1.FullOpen = true;
             if (colorDialog1.ShowDialog() == DialogResult.OK)
             {
                 color = colorDialog1.Color;
@@ -265,6 +269,72 @@ namespace PaintKiller
             /*Graphics g = Graphics.FromImage(currentLayer.image);
             g.DrawString("Hello", new Font("Arial", 14), Brushes.Black, 2, 2);*/
             //Controls.Add(image);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show(
+            "Вы действительно хотите выйти?",
+            "Сообщение",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Information,
+            MessageBoxDefaultButton.Button1,
+            MessageBoxOptions.DefaultDesktopOnly);
+
+            if (result == DialogResult.Yes)
+                this.Close();
+
+           // this.TopMost = true;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            Graphics graphics = Graphics.FromImage(currentLayer.image);
+            graphics.Clear(canvas.BackColor);
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+        System.Timers.Timer timer = new System.Timers.Timer();
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            var str = DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second;
+            if (label4.InvokeRequired) label4.Invoke(new Action<string>((s) => label4.Text = s), str);
+            else
+                label4.Text = "Текущее время: " + str;
+        }
+
+        private void вправона90ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            canvas.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            canvas.Refresh();
+        }
+
+        private void влевона90ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            canvas.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            canvas.Refresh();
+        }
+
+        private void отображениеПоГоризонталиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            canvas.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            canvas.Refresh();
+        }
+
+        private void отображениеПоВертикалиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            canvas.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            canvas.Refresh();
+        }
+
+        private void на180ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            canvas.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            canvas.Refresh();
         }
 
         private void canvas_MouseDown(object sender, MouseEventArgs e)
