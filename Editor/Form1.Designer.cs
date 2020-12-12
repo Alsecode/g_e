@@ -35,6 +35,10 @@
             this.открытьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.расположениеФормToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.каскадToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.плиткаВертикальToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.плиткаГоризонтальToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,10 +48,11 @@
             this.menuStrip1.Font = new System.Drawing.Font("Baskerville Old Face", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.файлToolStripMenuItem});
+            this.файлToolStripMenuItem,
+            this.расположениеФормToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(920, 31);
+            this.menuStrip1.Size = new System.Drawing.Size(980, 31);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuStrip1_ItemClicked);
@@ -63,15 +68,17 @@
             // 
             // создатьToolStripMenuItem
             // 
+            this.создатьToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("создатьToolStripMenuItem.Image")));
             this.создатьToolStripMenuItem.Name = "создатьToolStripMenuItem";
-            this.создатьToolStripMenuItem.Size = new System.Drawing.Size(155, 28);
+            this.создатьToolStripMenuItem.Size = new System.Drawing.Size(224, 28);
             this.создатьToolStripMenuItem.Text = "Создать";
             this.создатьToolStripMenuItem.Click += new System.EventHandler(this.создатьToolStripMenuItem_Click);
             // 
             // открытьToolStripMenuItem
             // 
+            this.открытьToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("открытьToolStripMenuItem.Image")));
             this.открытьToolStripMenuItem.Name = "открытьToolStripMenuItem";
-            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(155, 28);
+            this.открытьToolStripMenuItem.Size = new System.Drawing.Size(224, 28);
             this.открытьToolStripMenuItem.Text = "Открыть";
             this.открытьToolStripMenuItem.Click += new System.EventHandler(this.открытьToolStripMenuItem_Click);
             // 
@@ -96,13 +103,47 @@
             this.label1.Text = "Открытые окна";
             this.label1.Visible = false;
             // 
+            // расположениеФормToolStripMenuItem
+            // 
+            this.расположениеФормToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.каскадToolStripMenuItem,
+            this.плиткаВертикальToolStripMenuItem,
+            this.плиткаГоризонтальToolStripMenuItem});
+            this.расположениеФормToolStripMenuItem.Name = "расположениеФормToolStripMenuItem";
+            this.расположениеФормToolStripMenuItem.Size = new System.Drawing.Size(174, 27);
+            this.расположениеФормToolStripMenuItem.Text = "Расположение форм";
+            // 
+            // каскадToolStripMenuItem
+            // 
+            this.каскадToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("каскадToolStripMenuItem.Image")));
+            this.каскадToolStripMenuItem.Name = "каскадToolStripMenuItem";
+            this.каскадToolStripMenuItem.Size = new System.Drawing.Size(255, 28);
+            this.каскадToolStripMenuItem.Text = "Каскад";
+            this.каскадToolStripMenuItem.Click += new System.EventHandler(this.каскадToolStripMenuItem_Click);
+            // 
+            // плиткаВертикальToolStripMenuItem
+            // 
+            this.плиткаВертикальToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("плиткаВертикальToolStripMenuItem.Image")));
+            this.плиткаВертикальToolStripMenuItem.Name = "плиткаВертикальToolStripMenuItem";
+            this.плиткаВертикальToolStripMenuItem.Size = new System.Drawing.Size(255, 28);
+            this.плиткаВертикальToolStripMenuItem.Text = "Плитка вертикально";
+            this.плиткаВертикальToolStripMenuItem.Click += new System.EventHandler(this.плиткаГоризонтальноToolStripMenuItem_Click);
+            // 
+            // плиткаГоризонтальToolStripMenuItem
+            // 
+            this.плиткаГоризонтальToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("плиткаГоризонтальToolStripMenuItem.Image")));
+            this.плиткаГоризонтальToolStripMenuItem.Name = "плиткаГоризонтальToolStripMenuItem";
+            this.плиткаГоризонтальToolStripMenuItem.Size = new System.Drawing.Size(255, 28);
+            this.плиткаГоризонтальToolStripMenuItem.Text = "Плитка горизонтально";
+            this.плиткаГоризонтальToolStripMenuItem.Click += new System.EventHandler(this.плиткаВертикальноToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
-            this.ClientSize = new System.Drawing.Size(920, 450);
+            this.ClientSize = new System.Drawing.Size(980, 450);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.menuStrip1);
@@ -128,6 +169,10 @@
         private System.Windows.Forms.ToolStripMenuItem открытьToolStripMenuItem;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ToolStripMenuItem расположениеФормToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem каскадToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem плиткаВертикальToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem плиткаГоризонтальToolStripMenuItem;
     }
 }
 

@@ -9,13 +9,14 @@ namespace Editor
 
         private static int scale = 100; //переменная-масштаб изображения
 
-        //PictureBox pic;
-        Bitmap image;
-        Color color;
+        Bitmap image;   
+        Color color;    //Переменная, хранящая текущий цвет
         int x0, y0;     //Координаты для рисования кистью
 
         public Form2()
         {
+
+            //Инициализация формы
             InitializeComponent();
             image = new Bitmap(1600, 800);
             ColorButton.BackColor = color;
@@ -24,9 +25,21 @@ namespace Editor
 
         private void Form2_Load(object sender, EventArgs e)
         {
+
+            //Параметры по умолчанию при загрузке новой формы
             canvas.Image = new Bitmap(Width, Height);
             plusButton.Enabled = false;
             minusButton.Enabled = false;
+
+            //Всплывающие подсказки при наведении мыши
+            ToolTip t = new ToolTip();
+            t.SetToolTip(minusButton, "Уменьшить размер в 1.1 раз");
+            t.SetToolTip(plusButton, "Увеличить размер в 1.1 раз");
+            t.SetToolTip(label3, "Текущий масштаб изображения");
+            t.SetToolTip(trackBar1, "Выберите толщину кисти или фигуры");
+            t.SetToolTip(ColorButton, "Выберите цвет");
+            t.SetToolTip(label1, "Текущая толщина");
+
         }
 
         bool Modified = false;
@@ -79,6 +92,7 @@ namespace Editor
             сохранитьToolStripMenuItem_Click(sender, e);
         }
 
+        //Функции для добавления затемнения, осветления и смешивания изображения
         Bitmap imadd(Bitmap Base, Bitmap Add)
         {
             Bitmap result = new Bitmap(Base);
@@ -233,6 +247,7 @@ namespace Editor
         int x2, y2;
 
 
+        //Функция заливки небольших фрагментов
         public void Fill(int x, int y)
         {
             if (x >= canvas.Width - 1)
@@ -336,7 +351,7 @@ namespace Editor
             }
         }
 
-        //События завершения рисования
+        //Событие завершения рисования
         private void canvas_MouseUp(object sender, MouseEventArgs e)
         {
             Graphics G = Graphics.FromImage(canvas.Image);
@@ -461,6 +476,11 @@ namespace Editor
             minusButton.Enabled = false;
             label3.Enabled = false;
             label3.Text = "100 %";
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void пользовательскоеМасштабированиеToolStripMenuItem_Click_1(object sender, EventArgs e)
