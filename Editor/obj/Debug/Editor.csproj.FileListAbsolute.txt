@@ -10,3 +10,15 @@ D:\c# projects\Editor\obj\Debug\Editor.exe
 D:\c# projects\Editor\obj\Debug\Editor.pdb
 D:\c# projects\Editor\obj\Debug\Editor.Form2.resources
 D:\c# projects\Editor\obj\Debug\Editor.FormText.resources
+C:\Users\ADMIN\source\repos\g_e-master\Editor\bin\Debug\Editor.exe.config
+C:\Users\ADMIN\source\repos\g_e-master\Editor\bin\Debug\Editor.exe
+C:\Users\ADMIN\source\repos\g_e-master\Editor\bin\Debug\Editor.pdb
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.csprojResolveAssemblyReference.cache
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.Form1.resources
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.Form2.resources
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.FormText.resources
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.Properties.Resources.resources
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.csproj.GenerateResource.cache
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.csproj.CoreCompileInputs.cache
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.exe
+C:\Users\ADMIN\source\repos\g_e-master\Editor\obj\Debug\Editor.pdb
