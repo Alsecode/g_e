@@ -8,10 +8,14 @@ namespace Editor
     {
 
         private static int scale = 100; //переменная-масштаб изображения
+        int defaultWidth = 1600;
+        int defaultHeight = 800;
+        
 
         Bitmap image;   
         Color color;    //Переменная, хранящая текущий цвет
         int x0, y0;     //Координаты для рисования кистью
+        float kx, ky;
 
         public Form2()
         {
@@ -21,6 +25,7 @@ namespace Editor
             image = new Bitmap(1600, 800);
             ColorButton.BackColor = color;
             x0 = y0 = 0;
+            kx = ky = 1f;
         }
 
         private void Form2_Load(object sender, EventArgs e)
@@ -311,7 +316,7 @@ namespace Editor
 
                 if (e.Button == MouseButtons.Left && image != null)
                 {
-                    g.DrawLine(pen, x0, y0, e.X, e.Y);
+                    g.DrawLine(pen, x0 * kx, y0 * ky, e.X * kx, e.Y * ky);
                     canvas.Image = image;
                 }
                 x0 = e.X;
@@ -440,6 +445,7 @@ namespace Editor
         //Масштабирование изображения
         private void реальныйToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
+            kx = ky = 1f;
             canvas.SizeMode = PictureBoxSizeMode.Normal;
             canvas.Dock = DockStyle.Fill;
             plusButton.Enabled = false;
@@ -494,6 +500,8 @@ namespace Editor
             plusButton.Enabled = true;
             minusButton.Enabled = true;
             label3.Enabled = true;
+            kx = (float)defaultWidth / canvas.Width;
+            ky = (float)defaultHeight / canvas.Height;
         }
 
         private void plusButton_Click(object sender, EventArgs e)
@@ -503,6 +511,8 @@ namespace Editor
 
             scale = (int)(scale * 1.1);
             label3.Text = scale.ToString() + "%";
+            kx = (float)defaultWidth / canvas.Width;
+            ky = (float)defaultHeight / canvas.Height;
         }
 
         private void minusButton_Click_1(object sender, EventArgs e)
@@ -512,6 +522,8 @@ namespace Editor
 
             scale = (int)(scale / 1.1);
             label3.Text = scale.ToString() + "%";
+            kx = (float)defaultWidth / canvas.Width;
+            ky = (float)defaultHeight / canvas.Height;
         }
 
 
