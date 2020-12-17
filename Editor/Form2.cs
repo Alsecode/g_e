@@ -1,35 +1,41 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Editor
 {
     public partial class Form2 : Form
     {
 
-        private static int scale = 100; //переменная-масштаб изображения
+        //private static int scale = 100; //переменная-масштаб изображения
+        float scale = 1f;
 
-        Bitmap image;   
-        Color color;    //Переменная, хранящая текущий цвет
+        int defaultWidth = 600;
+        int defaultHeight = 300;
+        List<Layer> layers = new List<Layer>();
+        Layer currentLayer = null;
+
+        //Bitmap image;   
+        Color color = Color.Black;    //Переменная, хранящая текущий цвет
         int x0, y0;     //Координаты для рисования кистью
+        float kx, ky;
 
         public Form2()
         {
-
             //Инициализация формы
             InitializeComponent();
-            image = new Bitmap(1600, 800);
             ColorButton.BackColor = color;
             x0 = y0 = 0;
+            kx = ky = 1f;
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
-
             //Параметры по умолчанию при загрузке новой формы
-            canvas.Image = new Bitmap(Width, Height);
-            plusButton.Enabled = false;
-            minusButton.Enabled = false;
+            UpdateLayersPanel();
+            //plusButton.Enabled = false;
+            //minusButton.Enabled = false;
 
             //Всплывающие подсказки при наведении мыши
             ToolTip t = new ToolTip();
@@ -55,7 +61,13 @@ namespace Editor
             Text = openFileDialog1.FileName;
             saveFileDialog1.FileName = openFileDialog1.FileName;
             //canvas.Image = new Bitmap(openFileDialog1.FileName);
-            image = new Bitmap(openFileDialog1.FileName);
+            //image = new Bitmap(openFileDialog1.FileName);
+            Bitmap b = new Bitmap(openFileDialog1.FileName);
+            
+            CreateNewCanvas(b.Width, b.Height);
+
+            AddLayer(b);
+            RepaintAllLayers();
 
             Modified = false;
         }
@@ -90,6 +102,45 @@ namespace Editor
             Text = saveFileDialog1.FileName;
             Modified = true;
             сохранитьToolStripMenuItem_Click(sender, e);
+        }
+        
+        //создание нового канваса, канвас может быть только 1
+        public void CreateNewCanvas(int width, int height)
+        {
+            if (canvas != null) canvas.Dispose();
+            RemoveAllLayers();
+            canvas = new PictureBox();
+            canvas.Anchor = AnchorStyles.None;
+            canvas.BackColor = SystemColors.ControlLightLight;
+            canvas.BorderStyle = BorderStyle.FixedSingle;
+            canvas.InitialImage = null;
+            canvas.Location = new Point(77, 31);
+            canvas.Name = "canvas";
+            canvas.Size = new Size(width, height);
+            canvas.TabIndex = 1;
+            canvas.TabStop = false;
+            canvas.SizeMode = PictureBoxSizeMode.StretchImage;
+            canvas.Click += new EventHandler(canvas_Click);
+            canvas.Paint += new PaintEventHandler(canvas_Paint);
+            canvas.MouseDown += new MouseEventHandler(canvas_MouseDown);
+            canvas.MouseMove += new MouseEventHandler(canvas_MouseMove);
+            canvas.MouseUp += new MouseEventHandler(canvas_MouseUp);
+            easel.Controls.Add(canvas);
+            defaultWidth = width;
+            defaultHeight = height;
+            CenterTheCanvas();
+        }
+
+        //вызывается при создании нового канваса - убирает все старые слои
+        private void RemoveAllLayers()
+        {
+            for (int i = 0; i < layers.Count; i++)
+            {
+                layers[i].panel.Dispose();
+            }
+            currentLayer = null;
+            layers.Clear();
+            UpdateLayersPanel();
         }
 
         //Функции для добавления затемнения, осветления и смешивания изображения
@@ -130,22 +181,34 @@ namespace Editor
 
         private void смешатьСДругимToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (currentLayer == null) return;
             if (openFileDialog1.ShowDialog() != DialogResult.OK) return;
 
             Bitmap AddImage = new Bitmap(openFileDialog1.FileName);
-            Bitmap BaseImage = (Bitmap)canvas.Image;
+            Bitmap BaseImage = currentLayer.bitmap;
+                
+            currentLayer.bitmap = imadd(BaseImage, AddImage);
 
-            canvas.Image = imadd(BaseImage, AddImage);
+            RepaintAllLayers();
+
         }
 
         private void затемнитьИзображениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            canvas.Image = imadd((Bitmap)canvas.Image, -10);
+            //canvas.Image = imadd((Bitmap)canvas.Image, -10);
+            if (currentLayer == null) return;
+            currentLayer.bitmap = imadd(currentLayer.bitmap, -10);
+            
+            RepaintAllLayers();
         }
 
         private void осветлитьИзображениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            canvas.Image = imadd((Bitmap)canvas.Image, 10);
+            //canvas.Image = imadd((Bitmap)canvas.Image, 10);
+            if (currentLayer == null) return;
+            currentLayer.bitmap = imadd(currentLayer.bitmap, 10);
+
+            RepaintAllLayers();
         }
 
         private void canvas_Click(object sender, EventArgs e)
@@ -250,6 +313,7 @@ namespace Editor
         //Функция заливки небольших фрагментов
         public void Fill(int x, int y)
         {
+            if (currentLayer == null) return;
             if (x >= canvas.Width - 1)
                 return;
             if (x < 1)
@@ -258,12 +322,12 @@ namespace Editor
                 return;
             if (y < 1)
                 return;
-            Graphics g = Graphics.FromImage(image);
+            Graphics g = Graphics.FromImage(currentLayer.image);
             g.DrawLine(pen, x, y, x, y + 0.5f);
 
             canvas.Invalidate();
 
-            Bitmap b = image;
+            Bitmap b = currentLayer.bitmap;
             if (b.GetPixel(x + 1, y).ToArgb() != color.ToArgb())
             {
                 Fill(x + 1, y);
@@ -306,13 +370,16 @@ namespace Editor
                 Pen pen = new Pen(color, trackBar1.Value);
                 pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
                 pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-                Graphics g;
-                g = Graphics.FromImage(image);
 
-                if (e.Button == MouseButtons.Left && image != null)
+                if (e.Button == MouseButtons.Left && currentLayer != null)
                 {
-                    g.DrawLine(pen, x0, y0, e.X, e.Y);
-                    canvas.Image = image;
+                    Graphics layerG = Graphics.FromImage(currentLayer.image);
+                    //Graphics canvasG = Graphics.FromImage(canvas.Image);
+                    layerG.DrawLine(pen, x0 * kx, y0 * ky, e.X * kx, e.Y * ky);
+                    //canvasG.DrawLine(pen, x0 * kx, y0 * ky, e.X * kx, e.Y * ky);
+                    //canvas.Image = image;
+                    //RepaintAllLayers();
+                    //canvas.Image = currentLayer.image;
                 }
                 x0 = e.X;
                 y0 = e.Y;
@@ -322,7 +389,8 @@ namespace Editor
                 return;
             x2 = e.X;
             y2 = e.Y;
-            canvas.Refresh();
+            //canvas.Refresh();
+            RepaintAllLayers();
         }
 
         //Событие процесса рисования фигур и надписи
@@ -354,28 +422,31 @@ namespace Editor
         //Событие завершения рисования
         private void canvas_MouseUp(object sender, MouseEventArgs e)
         {
-            Graphics G = Graphics.FromImage(canvas.Image);
+            //Graphics G = Graphics.FromImage(canvas.Image);
+            if (currentLayer == null) return;
+            Graphics G = Graphics.FromImage(currentLayer.image);
             switch (mode)
             {
                 case Mode.None:
                     break;
                 case Mode.Line:
-                    G.DrawLine(pen, x1, y1, e.X, e.Y);
+                    G.DrawLine(pen, x1 * kx, y1 * ky, e.X * kx, e.Y * ky);
                     break;
                 case Mode.Ellipse:
-                    G.DrawEllipse(pen, x1, y1, e.X - x1, e.Y - y1);
+                    G.DrawEllipse(pen, x1 * kx, y1 * ky, (e.X - x1) * kx, (e.Y - y1) * ky);
                     break;
                 case Mode.Rectangle:
-                    G.DrawRectangle(pen, x1, y1, e.X - x1, e.Y - y1);
+                    G.DrawRectangle(pen, x1 * kx, y1 * ky, (e.X - x1) * kx, (e.Y - y1) * ky);
                     break;
                 case Mode.Text:
-                    G.DrawString(text, font, Brushes.Black, e.X, e.Y);
+                    G.DrawString(text, font, Brushes.Black, e.X * kx, e.Y * ky);
                     mode = Mode.None;
                     break;
             }
             x2 = x1 = 0;
             y2 = y1 = 0;
-            canvas.Refresh();
+            //canvas.Refresh();
+            RepaintAllLayers();
             Modified = true;
         }
 
@@ -388,34 +459,49 @@ namespace Editor
 
         private void вправоНа90ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            canvas.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            canvas.Refresh();
+            //canvas.Image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            //canvas.Refresh();
+            if (currentLayer == null) return;
+            currentLayer.image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            RepaintAllLayers();
         }
 
         private void влевоНа90ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            canvas.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            canvas.Refresh();
+            //canvas.Image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            //canvas.Refresh();
+            if (currentLayer == null) return;
+            currentLayer.image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            RepaintAllLayers();
         }
 
 
         private void на180ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            canvas.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
-            canvas.Refresh();
+            //canvas.Image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            //canvas.Refresh();
+            if (currentLayer == null) return;
+            currentLayer.image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            RepaintAllLayers();
         }
 
         //Функции отображения изображения по горизонтали и вертикали
         private void отображениеПоГоризонталиToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            canvas.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-            canvas.Refresh();
+            //canvas.Image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            //canvas.Refresh();
+            if (currentLayer == null) return;
+            currentLayer.image.RotateFlip(RotateFlipType.RotateNoneFlipX);
+            RepaintAllLayers();
         }
 
         private void отображениеПоВертикалиToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            canvas.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
-            canvas.Refresh();
+            //canvas.Image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            //canvas.Refresh();
+            if (currentLayer == null) return;
+            currentLayer.image.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            RepaintAllLayers();
         }
 
         //Инструменты
@@ -440,6 +526,7 @@ namespace Editor
         //Масштабирование изображения
         private void реальныйToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
+            kx = ky = 1f;
             canvas.SizeMode = PictureBoxSizeMode.Normal;
             canvas.Dock = DockStyle.Fill;
             plusButton.Enabled = false;
@@ -467,6 +554,103 @@ namespace Editor
             label3.Enabled = false;
             label3.Text = "100 %";
         }
+        
+        //создание и добавление нового слоя
+        public void AddLayer()
+        {
+            Layer newLayer = new Layer(defaultWidth, defaultHeight);
+            layers.Insert(0, newLayer);
+            newLayer.SetParent(this);
+            newLayer.SetName($"Layer {layers.Count}");
+            LayersPanel.Controls.Add(newLayer.panel);
+        }
+
+        public void AddLayer(Bitmap bm)
+        {
+            Layer newLayer = new Layer(bm);
+            layers.Insert(0, newLayer);
+            newLayer.SetParent(this);
+            newLayer.SetName($"Layer {layers.Count}");
+            LayersPanel.Controls.Add(newLayer.panel);
+        }
+
+        //кнопка добавить новый слой
+        private void addLayerButton_Click(object sender, EventArgs e)
+        {
+            if (canvas == null) return;
+            AddLayer();
+            UpdateLayersPanel();
+        }
+
+        //кнопка убрать текущий слой
+        private void removeLayerButton_Click(object sender, EventArgs e)
+        {
+            if (currentLayer == null) return; //не выбран слой
+            layers.Remove(currentLayer);
+            currentLayer.panel.Dispose();
+            currentLayer = null;
+            UpdateLayersPanel();
+            RepaintAllLayers();
+        }
+
+        //обновляет кнопки добавления или удаления слоёв
+        private void UpdateLayersPanel()
+        {
+            if (layers.Count > 1 && canvas != null) removeLayerButton.Enabled = true;
+            else removeLayerButton.Enabled = false;
+        }
+
+        private void RepaintAllLayers()
+        {
+            if (layers.Count > 0)
+            {
+                //canvas.Image = layers[0].image;
+                canvas.Image = new Bitmap(defaultWidth, defaultHeight);
+                for (int i = 0; i < layers.Count; i++)
+                {
+                    Graphics g = Graphics.FromImage(canvas.Image);
+                    layers[i].image = layers[i].bitmap;
+                    g.DrawImage(layers[i].image, new Point(0, 0));
+                    layers[i].UpdateIcon();
+                }
+            }
+        }
+
+        //кликнули на слой, вызывается из класса Layer
+        public void clickOnLayer(Layer lay)
+        {
+            if (currentLayer != null)
+            {
+                currentLayer.RemoveSelection();
+            }
+            currentLayer = lay;
+            currentLayer.ShowSelection();
+        }
+
+        //кнопка создать нвоый canvas
+        private void createCanvasButton_Click(object sender, EventArgs e)
+        {
+            bool right = true;
+
+            int w, h;
+            if (int.TryParse(widthCanvasText.Text, out w)) widthCanvasText.BackColor = Color.White; 
+            else
+            {
+                widthCanvasText.BackColor = Color.Red;
+                right = false;
+            }
+
+            if (int.TryParse(heightCanvasText.Text, out h)) heightCanvasText.BackColor = Color.White;
+            else
+            {
+                heightCanvasText.BackColor = Color.Red;
+                right = false;
+            }
+
+            if (right) CreateNewCanvas(w, h);
+        }
+
+       
 
         private void сохранятьПропоцииToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -478,43 +662,64 @@ namespace Editor
             label3.Text = "100 %";
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void easel_Resize(object sender, EventArgs e)
         {
-
+            CenterTheCanvas();
         }
 
         private void пользовательскоеМасштабированиеToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            canvas.SizeMode = PictureBoxSizeMode.StretchImage;
+            //canvas.SizeMode = PictureBoxSizeMode.StretchImage;
             canvas.Dock = DockStyle.None;
 
             label3.Text = "100 %";
-            scale = 100;
+            //scale = 100;
 
             plusButton.Enabled = true;
             minusButton.Enabled = true;
             label3.Enabled = true;
+            //kx = (float)defaultWidth / canvas.Width;
+            //ky = (float)defaultHeight / canvas.Height;
         }
 
         private void plusButton_Click(object sender, EventArgs e)
         {
-            canvas.Width = (int)(canvas.Width * 1.1);
-            canvas.Height = (int)(canvas.Height * 1.1);
+            if (canvas == null) return;
+            scale += .1f;
 
-            scale = (int)(scale * 1.1);
-            label3.Text = scale.ToString() + "%";
+            label3.Text = $"{Math.Round(scale * 100)} %";
+            canvas.Width = (int)(defaultWidth * scale);
+            canvas.Height = (int)(defaultHeight * scale);
+            kx = (float)defaultWidth / canvas.Width;
+            ky = (float)defaultHeight / canvas.Height;
+            //scale = (int)(scale * 1.1);
+            //label3.Text = scale.ToString() + "%";
+            CenterTheCanvas();
+            canvas.Refresh();
         }
 
         private void minusButton_Click_1(object sender, EventArgs e)
         {
-            canvas.Width = (int)(canvas.Width / 1.1);
-            canvas.Height = (int)(canvas.Height / 1.1);
-
-            scale = (int)(scale / 1.1);
-            label3.Text = scale.ToString() + "%";
+            if (canvas == null) return;
+            scale -= .1f;
+            canvas.Width = (int)(defaultWidth * scale);
+            canvas.Height = (int)(defaultHeight * scale);
+            kx = (float)defaultWidth / canvas.Width;
+            ky = (float)defaultHeight / canvas.Height;
+            //canvas.Width = (int)(canvas.Width / 1.1);
+            //canvas.Height = (int)(canvas.Height / 1.1);
+            label3.Text = $"{Math.Round(scale * 100)} %";
+            CenterTheCanvas();
+            canvas.Refresh();
         }
 
-
+        private void CenterTheCanvas()
+        {
+            if (canvas == null) return;
+            int x = easel.Width / 2 - canvas.Width / 2;
+            int y = easel.Height / 2 - canvas.Height / 2;
+            canvas.Location = new Point(x, y);
+        }
 
     }
 
