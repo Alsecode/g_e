@@ -360,8 +360,10 @@ namespace Editor
             canvas_MouseMove(sender, e);
 
             //Заливка
+            if (currentLayer == null) return;
             if (e.Button == MouseButtons.Right)
             {
+                currentLayer.SaveState();
                 Fill(e.X, e.Y);
             }
         }
