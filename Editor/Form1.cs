@@ -84,5 +84,7 @@ namespace Editor
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
+
+
     }
 }
