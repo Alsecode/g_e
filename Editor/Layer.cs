@@ -35,7 +35,6 @@ namespace Editor
             bitmap = bm;
             image = (Image)bitmap;
             CreateLayerBox();
-            SaveState();
         }
 
         public Layer(Image i)
@@ -43,7 +42,6 @@ namespace Editor
             image = i;
             bitmap = (Bitmap)image;
             CreateLayerBox();
-            SaveState();
         }
 
         public void SetParent(Form2 f)
@@ -161,9 +159,8 @@ namespace Editor
 
         public void SaveState()
         {
-            int numberOfActions = 20;   //количество дейтсвий для отмены/возврата
             redoList.Clear();
-            if (undoList.Count >= numberOfActions)
+            if (undoList.Count >= 5)
             {
                 undoList.RemoveAt(0);
             }
