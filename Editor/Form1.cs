@@ -60,11 +60,6 @@ namespace Editor
             WindowList();
         }
 
-        private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            
-        }
-
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -84,7 +79,5 @@ namespace Editor
         {
             LayoutMdi(MdiLayout.TileVertical);
         }
-
-
     }
 }
